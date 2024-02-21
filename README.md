@@ -1,2 +1,2 @@
-# zen-budget
+# zenbudget
  

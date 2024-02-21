@@ -1,0 +1,42 @@
+version: '3'
+services:
+  zen_client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - CHOKIDAR_USEPOLLING=true # hot reload
+    command: /bin/sh -c "npm install && npm run dev"
+    stdin_open: true
+    tty: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+  zen_server:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - "5000:5000"
+    depends_on:
+      - zen_db
+    volumes:
+      - ./server:/server
+  zen_db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=${TIMEZONE}
+      - LANG=ja_JP.UTF-8
+      - LANGUAGE=ja_JP:ja
