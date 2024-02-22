@@ -64,7 +64,7 @@ export function DataTable<TData extends DataRowBase>({
     columnResizeMode: 'onChange',
     columnResizeDirection: 'rtl',
     defaultColumn: {
-      size: 10,
+      size: 50,
     },
     meta: {
       addable: addable,
@@ -110,10 +110,7 @@ export function DataTable<TData extends DataRowBase>({
   });
 
   const hasSelectColumn = !!columns.find(x => x.id === 'select');
-  const hasLosicalDeletedColumn = columns.find(x => x.id === 'isDeleted');
 
-
-  // フィルタUIの動的生成
   const renderFilterInput = (column: {
     id: string;
     label: string,
@@ -136,7 +133,6 @@ export function DataTable<TData extends DataRowBase>({
     }
   };
   const rowStatus = (row: Row<TData>) => {
-    if (row.getValue<boolean>("isDeleted")) return "losicalDeleted";
     if (row.getIsSelected()) return "selected";
     if (row.getValue<TableRowStatuses>("status") === TableRowStatuses.Removed) return "removed";
     if (row.getValue<TableRowStatuses>("status") === TableRowStatuses.Edited) return "edited";
@@ -179,7 +175,8 @@ export function DataTable<TData extends DataRowBase>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} size={header.getSize()}>
+                    <TableHead key={header.id} size={header.column.columnDef.size}
+                               minSize={header.column.columnDef.minSize} maxSize={header.column.columnDef.maxSize}>
                       {header.isPlaceholder ? null : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
@@ -204,7 +201,7 @@ export function DataTable<TData extends DataRowBase>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell colSpan={columns.length} className="h-50 text-center">
                   No results.
                 </TableCell>
               </TableRow>

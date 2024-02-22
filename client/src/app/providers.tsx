@@ -5,9 +5,15 @@ import {ThemeProvider as NextThemesProvider} from "next-themes"
 import {type ThemeProviderProps} from "next-themes/dist/types"
 import {SWRConfig} from "swr";
 import {createGetOptions} from "@/lib/utils/api-utils";
+import {TooltipProviderProps} from "@radix-ui/react-tooltip";
+import {TooltipProvider} from "@/components/ui/tooltip";
 
 export function ThemeProvider({children, ...props}: ThemeProviderProps) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+}
+
+export function ShadcnToolTipProvider({children}: TooltipProviderProps) {
+  return <TooltipProvider>{children}</TooltipProvider>
 }
 export function SWRProvider({children}: { children: React.ReactNode }) {
   const fetcher = async (url: RequestInfo | URL) => {

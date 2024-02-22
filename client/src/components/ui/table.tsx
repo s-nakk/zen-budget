@@ -7,33 +7,28 @@ const tableRowStyles = cva(
   [
     "border-b",
     "transition-colors",
-    "hover:bg-neutral-100/50",
-    "dark:hover:bg-neutral-800/50",
+    "hover:bg-muted/50",
+    "dark:hover:bg-muted/50",
   ],
   {
     variants: {
       status: {
-        losicalDeleted: [
-          "bg-gray-200",
-          "hover:bg-neutral-100/50",
-          "dark:bg-zinc-900",
-          "dark:hover:bg-zinc-900/50",
-        ],
         selected: [
           "bg-neutral-100",
-          "dark:bg-neutral-800",
-          "dark:hover:bg-neutral-800/50",
+          "dark:bg-secondary",
+          "dark:hover:bg-secondary/50",
         ],
         added: [
-          "bg-green-200",
-          "dark:bg-blue-950/50 bg-transparent",
+          "bg-blue-200",
+          "dark:bg-blue-800/20",
         ],
         edited: [
-          "bg-blue-200",
+          "bg-green-200",
           "dark:bg-green-950/50",
         ],
         removed: [
-          "dark:text-red-900/50",
+          "bg-red-200",
+          "dark:bg-red-800/20",
         ],
       },
     },
@@ -44,10 +39,10 @@ const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({className, ...props}, ref) => (
-  <div className="relative w-full  overflow-auto">
+  <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
+      className={cn("w-full caption-bottom table-fixed text-sm", className)}
       {...props}
     />
   </div>
@@ -81,7 +76,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-neutral-100/50 font-medium [&>tr]:last:border-b-0 dark:bg-neutral-800/50",
+      "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -92,7 +87,7 @@ TableFooter.displayName = "TableFooter"
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement> & {
-  status?: 'losicalDeleted' | 'selected' | 'added' | 'edited' | 'removed'
+  status?: 'selected' | 'added' | 'edited' | 'removed'
 }
 >(({className, status, ...props}, ref) => (
   <tr
@@ -105,13 +100,13 @@ TableRow.displayName = "TableRow"
 
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement> & { size?: number }
->(({className, size, ...props}, ref) => (
+  React.ThHTMLAttributes<HTMLTableCellElement> & { size?: number, minSize?: number, maxSize?: number }
+>(({className, size, minSize, maxSize, ...props}, ref) => (
   <th
     ref={ref}
-    style={{width: size ? `${size}px` : "auto"}}
+    style={{width: size ?? "auto", minWidth: minSize ?? "auto", maxWidth: maxSize ?? "auto"}}
     className={cn(
-      "h-10 px-2 text-left align-middle font-medium text-neutral-500 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] dark:text-neutral-400",
+      "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className
     )}
     {...props}
@@ -126,7 +121,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "p-1.5 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className
     )}
     {...props}
@@ -140,7 +135,7 @@ const TableCaption = React.forwardRef<
 >(({className, ...props}, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-sm text-neutral-500 dark:text-neutral-400", className)}
+    className={cn("mt-4 text-sm text-muted-foreground", className)}
     {...props}
   />
 ))

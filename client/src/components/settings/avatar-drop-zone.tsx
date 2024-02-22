@@ -78,7 +78,7 @@ export const AvatarDropZone: React.FC<AvatarDropZoneProps> = ({file, selectFile,
   return (
     <>
       <div
-        className="relative drop-shadow opacity-90 py-2 outline-neutral-500 outline-1 bg-neutral-950 rounded-sm outline-dashed w-40 lg:w-2/3">{filesPreview}
+        className="relative drop-shadow opacity-90 py-2 outline-neutral-500 outline-1 bg-neutral-100 dark:bg-card/50 rounded-sm outline-dashed w-40 lg:w-2/3">{filesPreview}
         {preview &&
             <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 z-30"
                     onClick={removeFile}>

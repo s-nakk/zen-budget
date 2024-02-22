@@ -9,7 +9,7 @@ async function getData(): Promise<Payee[]> {
   return Array.from({length: 20}, (_, index) => ({
     id: `dummyId${index}`,
     status: TableRowStatuses.None,
-    isDeleted: index / 2 === 1,
+    isDeleted: index % 2 === 0,
     code: index + 1,
     name: `Payee${index + 1}`,
     taxRateType: TaxType.Standard,

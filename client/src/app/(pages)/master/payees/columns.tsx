@@ -24,6 +24,8 @@ import {tableRowStatuses} from "@/lib/types/data";
 import {cn} from "@/lib/utils/utils";
 import {statusVariants} from "@/styles/styles";
 import {Badge, badgeVariants} from "@/components/ui/badge";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {AiFillQuestionCircle} from "react-icons/ai";
 
 export interface Payee extends DataRowBase {
   code: number
@@ -37,6 +39,7 @@ export interface Payee extends DataRowBase {
 export const payeeListColumns: ColumnDef<Payee>[] = [
   {
     id: "select",
+    size: 10,
     header: ({table}) => (
       <Checkbox
         checked={
@@ -58,19 +61,24 @@ export const payeeListColumns: ColumnDef<Payee>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "isDeleted",
+    accessorKey: "status",
     size: 20,
-    header: () => <p className="flex justify-center">非表示</p>,
+    minSize: 20,
+    header: () => <p className="flex justify-center items-center">状態</p>,
     cell: ({row}) => {
-      const isDeleted = row.getValue<boolean>("isDeleted");
-      return <div className="flex justify-center items-center">
-        {isDeleted && <FaCheck/>}
-      </div>;
+      const status = tableRowStatuses.find((status) => status.value === row.getValue<TableRowStatuses>("status"));
+      if (!status) return null;
+      type BadgeVariant = keyof typeof badgeVariants;
+      return (
+        <div className={cn(statusVariants({variant: "removed"}))}>
+          <Badge variant={status.variant as BadgeVariant}>{status.label}</Badge>
+        </div>
+      )
     },
   },
   {
     accessorKey: "code",
-    size: 20,
+    size: 30,
     filterFn: "equalsString",
     header: () => <p className="flex justify-end pr-2">コード</p>
     //   ({column}) => {
@@ -100,11 +108,12 @@ export const payeeListColumns: ColumnDef<Payee>[] = [
   {
     accessorKey: "invoiceNumber",
     header: "事業者登録番号",
+    size: 50
   },
   {
     accessorKey: "taxRateType",
     header: "税率区分",
-    size: 40,
+    size: 30,
     cell: ({row}) => {
       const taxTypeValue = row.getValue<TaxType>("taxRateType");
       const displayName = TaxTypesName[taxTypeValue];
@@ -114,26 +123,35 @@ export const payeeListColumns: ColumnDef<Payee>[] = [
   {
     accessorKey: "remarks",
     header: "備考",
-    size: 100,
+    size: 80,
   },
   {
-    accessorKey: "fill",
-    header: "",
-  },
-  {
-    accessorKey: "status",
-    size: 50,
-    header: () => <p className="flex justify-center items-center">状態</p>,
-    cell: ({row}) => {
-      const status = tableRowStatuses.find((status) => status.value === row.getValue<TableRowStatuses>("status"));
-      if (!status) return null;
-      type BadgeVariant = keyof typeof badgeVariants;
+    accessorKey: "isDeleted",
+    size: 30,
+    header: () => {
       return (
-        <div className={cn(statusVariants({variant: "removed"}))}>
-          <Badge variant={status.variant as BadgeVariant}>{status.label}</Badge>
-        </div>
+        <Tooltip>
+          <TooltipTrigger className="flex items-center justify-end">
+            <div className="flex items-center justify-end">
+              <p className="mr-1">非表示</p>
+              <AiFillQuestionCircle className="size-4"/>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>他画面の選択肢から除去されます。</p>
+          </TooltipContent>
+        </Tooltip>
       )
     },
+    cell: ({row}) => {
+      const isDeleted = row.getValue<boolean>("isDeleted");
+      return <div className="flex justify-center items-center">
+        {isDeleted && <FaCheck/>}
+      </div>;
+    },
+  },
+  {
+    id: 'fill'
   },
   {
     id: "edit",
@@ -146,7 +164,7 @@ export const payeeListColumns: ColumnDef<Payee>[] = [
             <SheetTrigger asChild>
               <Button type="button" variant="ghost"
                       disabled={row.getValue<TableRowStatuses>("status") === TableRowStatuses.Removed} size="icon"
-                      className="bg-green-900">
+                      className="bg-primary">
                 <RiEdit2Fill className="size-5"/>
               </Button>
             </SheetTrigger>
@@ -178,11 +196,6 @@ export const payeeListColumns: ColumnDef<Payee>[] = [
               </SheetFooter>
             </SheetContent>
           </Sheet>
-          {/*<WrappedTooltip description="行削除">*/}
-          {/*  <Button type="button" variant="destructive" size="icon">*/}
-          {/*    <FaTrashAlt className="size-5 "/>*/}
-          {/*  </Button>*/}
-          {/*</WrappedTooltip>*/}
         </div>
       )
     },

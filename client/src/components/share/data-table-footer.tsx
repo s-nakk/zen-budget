@@ -21,17 +21,15 @@ export function DataTableFooter<TData>({
         {
           <div className="flex-1 space-x-2">
             {
-              // @ts-ignore
-              table.options.meta?.addable ? <Button variant="default" className="bg-green-900"
-                // @ts-ignore
+              table.options.meta?.addable ?
+                <Button variant="default" className="text-foreground bg-primary hover:bg-primary/50"
                                                     onClick={() => table.options.meta?.addRow()}>追加</Button> : <></>
             }
             {
-              // @ts-ignore
               table.options.meta?.deletable ?
-                <Button variant="default" disabled={!table.options.data.length} className="bg-red-900" onClick={() => {
+                <Button variant="default" disabled={!table.options.data.length}
+                        className="text-destructive-foreground bg-destructive hover:bg-destructive/50" onClick={() => {
                   const indexes = table.getSelectedRowModel().rows.map(row => row.index);
-                  // @ts-ignore
                   table.options.meta?.removeRow(indexes)
                 }
                 }>削除</Button> : <></>

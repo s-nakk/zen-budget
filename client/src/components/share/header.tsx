@@ -8,7 +8,7 @@ export default function Header() {
   return (
     <>
       <div
-        className="sticky flex lg:justify-center items-center space-x-6 h-12 lg:h-14 top-0 left-0 w-full z-50 dark:bg-neutral-950  bg-white shadow">
+        className="sticky flex lg:justify-center items-center space-x-6 h-12 lg:h-14 top-0 left-0 w-full z-50 bg-background shadow">
         <Link
           className="hidden md:block items-end justify-start mr-4"
           href={"/dashboard"}>
