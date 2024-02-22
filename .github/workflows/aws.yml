@@ -42,7 +42,7 @@ jobs:
        run: |
 
          # SSH接続して、git pullする
-         echo "${{ secrets.PRIVATE_KEY }}" > private_key
+         echo "${{ secrets.EC2_SSH_KEY }}" > private_key
          chmod 600 private_key
-           ssh -o StrictHostKeyChecking=no ${{ secrets.USER_NAME }}@${{ secrets.HOST_NAME }} -i private_key "cd /var/www/zen-budget && git fetch --prune && git checkout main && git pull origin main"
+           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER_NAME }}@${{ secrets.EC2_HOST_NAME }} -i private_key "cd /var/www && git fetch --prune && git checkout main && git pull origin main"
 
