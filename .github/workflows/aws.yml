@@ -44,5 +44,5 @@ jobs:
          # SSH接続して、git pullする
          echo "${{ secrets.EC2_SSH_KEY }}" > private_key
          chmod 600 private_key
-           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER_NAME }}@${{ secrets.EC2_HOST_NAME }} -i private_key "cd /var/www && git fetch --prune && git checkout main && git pull origin main"
+           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER_NAME }}@${{ secrets.EC2_HOST_NAME }} -i private_key "cd /opt && git fetch --prune && git checkout main && git pull origin main"
 
