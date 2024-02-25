@@ -65,17 +65,17 @@ export interface DataRowBase {
   status: TableRowStatuses;
 }
 
+export interface WithId {
+  id: number | string;
+}
+
 declare module '@tanstack/table-core' {
   interface TableMeta<TData> {
     addable: boolean;
     deletable: boolean;
     editedRows: { [key: string]: any };
-    setEditedRows: (editedRows: { [key: string]: any }) => void;
-    removedRows: TData[];
-    setRemovedRows?: (removedRows: TData[]) => void;
+    removedRows: { [key: string]: any };
     addedRows: { [key: string]: any };
-    setAddedRows: (addedRows: { [key: string]: any }) => void;
-    addRow: () => void;
-    removeRow: (rowIndexes: number[]) => void;
+    removeRow: (ids: string[]) => void;
   }
 }

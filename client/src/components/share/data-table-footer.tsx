@@ -1,39 +1,70 @@
 import {Button} from "@/components/ui/button";
 import {ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon} from "@radix-ui/react-icons";
-import React from "react";
+import React, {ReactNode} from "react";
 import {Table} from "@tanstack/table-core";
 import {cn} from "@/lib/utils/utils";
+import {Sheet, SheetTrigger} from "@/components/ui/sheet";
+import {Messages} from "@/lib/constants/messages";
 
 interface DataTableFooterProps<TData> {
   table: Table<TData>;
   hasSelectColumn: boolean
   className?: string
+  renderSheetContent?: () => ReactNode;
+}
+
+interface DataTableFooterProps<TData> {
+  table: Table<TData>;
+  hasSelectColumn: boolean
+  className?: string
+  renderSheetContent?: () => ReactNode;
 }
 
 export function DataTableFooter<TData>({
                                          table,
                                          hasSelectColumn,
-                                         className
+                                         className,
+                                         renderSheetContent
                                        }: DataTableFooterProps<TData>) {
+  const handleSubmit = () => {
+    console.log({added: table.options.meta?.addedRows})
+    console.log({edited: table.options.meta?.editedRows})
+    console.log({removed: table.options.meta?.removedRows})
+  }
   return (
     <div className="space-y-2">
       <div className={cn("flex items-center space-x-2", className)}>
         {
           <div className="flex-1 space-x-2">
             {
-              table.options.meta?.addable ?
-                <Button variant="default" className="text-foreground bg-primary hover:bg-primary/50"
-                                                    onClick={() => table.options.meta?.addRow()}>追加</Button> : <></>
+              table.options.meta?.addable &&
+                <Sheet>
+                    <SheetTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium
+                   transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50
+                   bg-primary text-foreground shadow hover:bg-primary/50 h-9 px-4 py-2">
+                        追加</SheetTrigger>
+                  {renderSheetContent && renderSheetContent()}
+                </Sheet>
             }
             {
-              table.options.meta?.deletable ?
+              table.options.meta?.deletable &&
                 <Button variant="default" disabled={!table.options.data.length}
                         className="text-destructive-foreground bg-destructive hover:bg-destructive/50" onClick={() => {
-                  const indexes = table.getSelectedRowModel().rows.map(row => row.index);
-                  table.options.meta?.removeRow(indexes)
+                  const ids = table.getSelectedRowModel().rows.map(row => {
+                    console.log({original: row.original});
+                    // @ts-ignore
+                    return row.original.id.toString()
+                  });
+                  table.options.meta?.removeRow(ids)
                 }
-                }>削除</Button> : <></>
+                }>削除</Button>
             }
+            {hasSelectColumn ?
+              <div className="flex text-sm text-muted-foreground">
+                {`${table.getFilteredRowModel().rows.length} 件中 
+            ${table.getFilteredSelectedRowModel().rows.length} 件選択しています。`}
+              </div>
+              : <></>}
           </div>
         }
         <div className="flex items-center space-x-2">
@@ -79,13 +110,9 @@ export function DataTableFooter<TData>({
           </Button>
         </div>
       </div>
-      <div>
-        {hasSelectColumn ?
-          <div className="flex-1 text-sm text-muted-foreground">
-            {`${table.getFilteredRowModel().rows.length} 件中 
-            ${table.getFilteredSelectedRowModel().rows.length} 件選択しています。`}
-          </div>
-          : <></>}
+      <div className="flex justify-center">
+        <Button className="" type="submit" size="lg" variant="default"
+                onClick={handleSubmit}>{Messages.REGISTER}</Button>
       </div>
     </div>
   )

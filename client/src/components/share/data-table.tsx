@@ -13,12 +13,13 @@ import {
 import {flexRender, useReactTable} from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import React, {useState} from "react";
+import React, {ReactNode, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {DataTableFooter} from "@/components/share/data-table-footer";
 import {TableRowStatuses} from "@/lib/constants/enums";
 import {DataRowBase} from "@/lib/types/definitions";
+import DataTableContext from "./data-table-context";
 
 interface DataTableProps<TData extends DataRowBase> {
   columns: ColumnDef<TData>[];
@@ -27,23 +28,24 @@ interface DataTableProps<TData extends DataRowBase> {
   onAddRow?: () => TData;
   addable?: boolean
   deletable?: boolean
+  renderSheetContent?: () => ReactNode;
 }
 
 export function DataTable<TData extends DataRowBase>({
                                                        columns,
                                                        data,
                                                        filterableColumns,
-                                                       onAddRow,
                                                        addable = true,
-                                                       deletable = true
+                                                       deletable = true,
+                                                       renderSheetContent
                                                      }: DataTableProps<TData>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [editedRows, setEditedRows] = useState({});
+  const [editedRows, setEditedRows] = useState<TData[]>([]);
   const [removedRows, setRemovedRows] = useState<TData[]>([]);
-  const [addedRows, setAddedRows] = useState({});
+  const [addedRows, setAddedRows] = useState<TData[]>([]);
   const [rowSelection, setRowSelection] = React.useState({})
   const [tableData, setTableData] = useState(() => [...data]);
   const [tempIdCounter, setTempIdCounter] = useState(0);
@@ -69,24 +71,13 @@ export function DataTable<TData extends DataRowBase>({
     meta: {
       addable: addable,
       deletable: deletable,
-      editedRows,
-      setEditedRows,
-      removedRows,
-      setRemovedRows,
       addedRows,
-      setAddedRows,
-      addRow: () => {
-        if (onAddRow) {
-          const newRow = onAddRow(); // onAddRow関数を呼び出して新しい行データを取得
-          newRow.id = tempIdCounter - 1;
-          setTempIdCounter(tempIdCounter - 1);
-          setTableData(currentData => [newRow, ...currentData]);
-        }
-        table.toggleAllPageRowsSelected(false);
-      },
-      removeRow: (rowIndexes: number[]) => {
-        if (!rowIndexes.length) return;
-        const removedData = rowIndexes.map(index => tableData[index]);
+      editedRows,
+      removedRows,
+      removeRow: (ids: string[]) => {
+        if (!ids.length) return;
+        const removedModels: TData[] = [];
+        const removedData = tableData.filter(t => ids.some(id => id === t.id));
         removedData.forEach((removedData) => {
           removedData.status = TableRowStatuses.Removed;
         });
@@ -100,10 +91,15 @@ export function DataTable<TData extends DataRowBase>({
             const found = removedData.find(removed => removed.id === data.id);
             if (found) {
               data.status = TableRowStatuses.Removed;
+              removedModels.push(data)
             }
             return data;
           });
         });
+        setRemovedRows(prev => [
+          ...prev,
+          ...removedModels.filter(rm => !prev.some(p => p.id === rm.id))
+        ]);
         table.toggleAllPageRowsSelected(false);
       },
     }
@@ -139,77 +135,110 @@ export function DataTable<TData extends DataRowBase>({
     if (row.getValue<TableRowStatuses>("status") === TableRowStatuses.Added) return "added";
     return undefined;
   }
+  const updateRow = (updatedRow: TData) => {
+    if (!updatedRow) return;
+    if (updatedRow.status !== TableRowStatuses.Added) {
+      updatedRow.status = TableRowStatuses.Edited;
+      setEditedRows(prev => {
+        const isExisting = prev.some(p => p.id === updatedRow.id);
+        return isExisting ? prev : [...prev, updatedRow];
+      });
+    }
+    setTableData(currentData => {
+      return currentData.map(data => data.id === updatedRow.id ? updatedRow : data);
+    });
+  };
+  const addRow = (newRow: TData) => {
+    if (!newRow) return;
+    newRow.id = tempIdCounter - 1; // 仮IDを割り当て
+    newRow.status = TableRowStatuses.Added;
+    setTempIdCounter(tempIdCounter - 1);
+    setAddedRows(prev => {
+      const isExisting = prev.some(p => p.id === newRow.id);
+      return isExisting ? prev : [...prev, newRow];
+    });
+    setTableData(currentData => [newRow, ...currentData]);
+    table.toggleAllPageRowsSelected(false);
+  };
+  const getRowData = (rowId: string | number | undefined) => {
+    if (!rowId) return null;
+    return tableData.find(row => row.id === rowId);
+  };
+
   return (
-    <div className="w-full">
-      <div className="flex items-center relative">
-        <div className="flex items-center">
-          {filterableColumns.map((column) => (
-            <div key={column.id}>{renderFilterInput(column)}</div>
-          ))}
-        </div>
-        <div className="flex items-center space-x-2 absolute right-0">
-          <p className="text-sm font-medium">ページサイズ</p>
-          <Select
-            value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value))
-            }}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize}/>
-            </SelectTrigger>
-            <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="rounded-md border mt-1">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} size={header.column.columnDef.size}
-                               minSize={header.column.columnDef.minSize} maxSize={header.column.columnDef.maxSize}>
-                      {header.isPlaceholder ? null : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
+    <DataTableContext.Provider value={{updateRow, addRow, getRowData}}>
+      <div className="w-full">
+        <div className="flex items-center relative">
+          <div className="flex items-center">
+            {filterableColumns.map((column) => (
+              <div key={column.id}>{renderFilterInput(column)}</div>
             ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}
-                          status={rowStatus(row)}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+          </div>
+          <div className="flex items-center space-x-2 absolute right-0">
+            <p className="text-sm font-medium">ページサイズ</p>
+            <Select
+              value={`${table.getState().pagination.pageSize}`}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value))
+              }}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue placeholder={table.getState().pagination.pageSize}/>
+              </SelectTrigger>
+              <SelectContent side="top">
+                {[10, 20, 30, 40, 50].map((pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="rounded-md border mt-1">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} size={header.column.columnDef.size}
+                                 minSize={header.column.columnDef.minSize} maxSize={header.column.columnDef.maxSize}>
+                        {header.isPlaceholder ? null : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-50 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}
+                            status={rowStatus(row)}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-50 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <DataTableFooter table={table} hasSelectColumn={hasSelectColumn} className="mt-2"
+                         renderSheetContent={renderSheetContent}/>
       </div>
-      <DataTableFooter table={table} hasSelectColumn={hasSelectColumn} className="mt-2"/>
-    </div>
+    </DataTableContext.Provider>
   )
 }

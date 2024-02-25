@@ -1,10 +1,11 @@
 'use client'
 
-import {Payee, payeeListColumns, payeeListFilterColumns} from "@/app/(pages)/master/payees/columns";
+import {Payee, payeeListColumns, payeeListFilterColumns, PayeeSheetContent} from "@/app/(pages)/master/payees/columns";
 import {DataTable} from "@/components/share/data-table";
-import {TableRowStatuses, TaxType} from "@/lib/constants/enums";
+import {TableRowStatuses, TaxTypes} from "@/lib/constants/enums";
+import React from "react";
 
-async function getData(): Promise<Payee[]> {
+function getData(): Payee[] {
   // ダミーデータを生成するための配列を作成し、20件のデータを追加します。
   return Array.from({length: 20}, (_, index) => ({
     id: `dummyId${index}`,
@@ -12,26 +13,14 @@ async function getData(): Promise<Payee[]> {
     isDeleted: index % 2 === 0,
     code: index + 1,
     name: `Payee${index + 1}`,
-    taxRateType: TaxType.Standard,
+    taxRateType: TaxTypes.Standard,
     invoiceNumber: `T123456789${index}`,
     remarks: `remarks${index}`
   }));
 }
 
-const addRow = (): Payee => {
-  return {
-    status: TableRowStatuses.Added,
-    isDeleted: false,
-    code: 99,
-    name: `Payee99`,
-    taxRateType: TaxType.Standard,
-    invoiceNumber: `T12345678999`,
-    remarks: `remarks99`
-  }
-}
-
-export default async function PayeesList() {
-  const data = await getData();
+export default function PayeesList() {
+  const data = getData();
   return (
     <div className="container hidden h-full flex-1 flex-col p-8 md:flex">
       <div className="flex items-center justify-between space-y-2">
@@ -43,8 +32,13 @@ export default async function PayeesList() {
         </div>
       </div>
       <div className="py-10">
-        <DataTable<Payee> columns={payeeListColumns} filterableColumns={payeeListFilterColumns} data={data}
-                          onAddRow={addRow}/>
+        <DataTable<Payee>
+          columns={payeeListColumns}
+          filterableColumns={payeeListFilterColumns}
+          data={data}
+          renderSheetContent={() => (
+            <PayeeSheetContent/>
+          )}/>
       </div>
     </div>
 
