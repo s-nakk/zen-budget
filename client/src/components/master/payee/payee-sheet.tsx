@@ -10,7 +10,7 @@ interface PayeeSheetProps {
   children: ReactNode;
 }
 
-export const PayeeSheet = ({payeeId, row, children}: PayeeSheetProps) => {
+export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const handleCloseSheet = () => setIsSheetOpen(false);
