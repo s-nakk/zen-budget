@@ -4,11 +4,13 @@ import React from 'react';
 type UpdateRowFunction = (updatedRow: any) => void;
 type AddRowFunction = (newRow: any) => void;
 type GetRowDataFunction = (rowId: string | number | undefined) => any | undefined;
-
+type SetIsOpenFunction = (isOpen: boolean) => void;
 // コンテキストの作成
 const DataTableContext = React.createContext<{
   updateRow?: UpdateRowFunction,
   addRow?: AddRowFunction,
   getRowData?: GetRowDataFunction
-}>({});
+  setIsOpen?: SetIsOpenFunction
+  isOpen?: boolean
+}>({isOpen: false});
 export default DataTableContext;

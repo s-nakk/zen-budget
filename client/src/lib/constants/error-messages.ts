@@ -4,4 +4,6 @@ export const ErrorMessages = {
   USER_FETCH_ERROR: "ユーザー情報の取得に失敗しました。",
   PASSWORD_MISMATCH: "入力されたパスワードが登録情報と一致していません。",
   SESSION_INVALID: "セッション情報が取得できませんでした。",
+  CODE_REQUIRED: "コードは必須です。",
+  NAME_REQUIRED: "名称は必須です。",
 };

@@ -1,4 +1,6 @@
 import {z} from "zod";
+import {TaxTypes} from "@/lib/constants/enums";
+import {ErrorMessages} from "@/lib/constants/error-messages";
 
 export const PasswordChangeSchema = z.object({
   currentPassword: z.string().min(1, "現在のパスワードを入力してください。"),
@@ -16,4 +18,14 @@ export const UserInfoSchema = z.object({
   name: z.string().max(40, "40文字以内で入力してください。"),
   email: z.string().email("メールアドレスの形式で入力してください。(例:example@mail.co.jp)"),
   avatar: z.custom<File | null>()
+});
+
+
+export const PayeeSchema = z.object({
+  code: z.coerce.number({
+    required_error: ErrorMessages.CODE_REQUIRED,
+    invalid_type_error: ErrorMessages.CODE_REQUIRED
+  }).min(1, ErrorMessages.CODE_REQUIRED),
+  name: z.string().min(1, ErrorMessages.NAME_REQUIRED),
+  taxRateType: z.nativeEnum(TaxTypes),
 });
