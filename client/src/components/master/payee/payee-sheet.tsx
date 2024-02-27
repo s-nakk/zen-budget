@@ -61,7 +61,7 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
     console.log("effect");
     setPayeeState(getPayeeState());
     setInitPayeeState(getPayeeState);
-  }, [isSheetOpen]);
+  }, []);
 
   const handleCloseSheet = () => {
     setIsSheetOpen(false);
@@ -152,7 +152,7 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
     }));
   };
   return (
-    <div>
+    <>
       <Sheet key={payeeId} open={isSheetOpen} onOpenChange={onOpenChange}>
         <SheetTrigger asChild>
           {children}
@@ -262,6 +262,6 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
           </AlertDialogContent>
         </AlertDialog>
       )}
-    </div>
+    </>
   )
 }

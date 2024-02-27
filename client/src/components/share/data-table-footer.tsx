@@ -31,10 +31,10 @@ export function DataTableFooter<TData>({
     console.log({removed: table.options.meta?.removedRows})
   }
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 relative">
       <div className={cn("flex items-center space-x-2", className)}>
         {
-          <div className="flex-1 space-x-2">
+          <div className="flex space-x-2 ">
             {
               table.options.meta?.addable &&
               renderSheetContent && renderSheetContent()
@@ -52,15 +52,13 @@ export function DataTableFooter<TData>({
                 }
                 }>削除</Button>
             }
-            {hasSelectColumn ?
-              <div className="flex text-sm text-muted-foreground">
-                {`${table.getFilteredRowModel().rows.length} 件中 
-            ${table.getFilteredSelectedRowModel().rows.length} 件選択しています。`}
-              </div>
-              : <></>}
           </div>
         }
-        <div className="flex items-center space-x-2">
+        <div className="absolute inset-0 flex items-start justify-center mx-auto max-w-screen-xl">
+          <Button type="submit" size="lg" variant="default"
+                  onClick={handleSubmit}>{Messages.REGISTER}</Button>
+        </div>
+        <div className="absolute right-1 flex justify-end items-center space-x-2">
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
@@ -103,10 +101,12 @@ export function DataTableFooter<TData>({
           </Button>
         </div>
       </div>
-      <div className="flex justify-center">
-        <Button className="" type="submit" size="lg" variant="default"
-                onClick={handleSubmit}>{Messages.REGISTER}</Button>
-      </div>
+      {hasSelectColumn ?
+        <div className="flex text-sm text-muted-foreground">
+          {`${table.getFilteredRowModel().rows.length} 件中 
+            ${table.getFilteredSelectedRowModel().rows.length} 件選択しています。`}
+        </div>
+        : <></>}
     </div>
   )
 }
