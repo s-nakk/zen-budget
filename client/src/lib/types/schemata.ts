@@ -25,7 +25,10 @@ export const PayeeSchema = z.object({
   code: z.coerce.number({
     required_error: ErrorMessages.CODE_REQUIRED,
     invalid_type_error: ErrorMessages.CODE_REQUIRED
-  }).min(1, ErrorMessages.CODE_REQUIRED),
+  }).min(1, ErrorMessages.CODE_LEAST),
   name: z.string().min(1, ErrorMessages.NAME_REQUIRED),
+  invoiceNumber: z.string().max(40),
   taxRateType: z.nativeEnum(TaxTypes),
+  remarks: z.string(),
+  isDeleted: z.boolean()
 });

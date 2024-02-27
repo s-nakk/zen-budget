@@ -110,7 +110,8 @@ export default function UserInfoForm() {
                     <FormLabel>ユーザー名</FormLabel>
                     <FormControl>
                       <Input
-                        type="name"
+                        id="name"
+                        type="text"
                         className="lg:w-3/5"
                         required={true}
                         {...field}
@@ -127,6 +128,7 @@ export default function UserInfoForm() {
                     <FormLabel>メールアドレス</FormLabel>
                     <FormControl>
                       <Input
+                        id="email"
                         type="email"
                         className="lg:w-3/5"
                         required={true}

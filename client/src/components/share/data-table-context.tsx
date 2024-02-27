@@ -11,6 +11,5 @@ const DataTableContext = React.createContext<{
   addRow?: AddRowFunction,
   getRowData?: GetRowDataFunction
   setIsOpen?: SetIsOpenFunction
-  isOpen?: boolean
-}>({isOpen: false});
+}>({});
 export default DataTableContext;
