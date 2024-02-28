@@ -28,3 +28,8 @@ export const TableRowStatusesName = {
   [TableRowStatuses.Added]: "新規",
   [TableRowStatuses.Removed]: "削除"
 };
+
+export enum InputLabelType {
+  Optional = 0,
+  Required = 1,
+}

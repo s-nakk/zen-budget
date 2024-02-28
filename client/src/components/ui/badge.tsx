@@ -18,6 +18,10 @@ const badgeVariants = cva(
           "bg-green-500 text-neutral-50 shadow dark:bg-green-900 shadow",
         added:
           "bg-blue-500 text-neutral-50 shadow dark:bg-blue-900 shadow",
+        required:
+          "bg-red-700 text-neutral-50 shadow dark:bg-red-900 shadow",
+        optional:
+          "bg-gray-700 text-neutral-50 shadow dark:bg-gray-900 shadow",
         outline: "text-foreground",
       },
     },

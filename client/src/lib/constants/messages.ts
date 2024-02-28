@@ -5,5 +5,6 @@ export const Messages = {
   PROFILE_UPDATED: "ユーザー情報が正常に更新されました。",
   PASSWORD_UPDATED: "パスワードが正常に更新されました。",
   CONFIRM_CLOSE: "閉じてもよろしいですか？",
-  CONFIRM_CLOSE_DESCRIPTION: "編集中のデータは破棄されます。",
+  CONFIRM_CLOSE_DESCRIPTION: "このまま閉じた場合、編集中のデータは破棄されます。",
+  SAVE: "変更を保存",
 };

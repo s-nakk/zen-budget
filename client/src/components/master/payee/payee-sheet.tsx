@@ -24,6 +24,7 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import {Messages} from "@/lib/constants/messages";
+import {Badge} from "@/components/ui/badge";
 
 interface PayeeSheetProps {
   payeeId?: string | number | undefined,
@@ -58,7 +59,6 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
   const [initPayeeState, setInitPayeeState] = useState();
 
   useEffect(() => {
-    console.log("effect");
     setPayeeState(getPayeeState());
     setInitPayeeState(getPayeeState);
   }, []);
@@ -117,7 +117,7 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
   };
   const TaxTypeSelectItems = () => {
     return (
-      <SelectContent>
+      <SelectContent className="col-span-3">
         {Object.values(TaxTypes).filter(value => typeof value === "number").map((taxType) => (
           <SelectItem key={taxType} value={taxType.toString()}>
             {TaxTypesName[taxType as keyof typeof TaxTypesName]}
@@ -157,13 +157,14 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
         <SheetTrigger asChild>
           {children}
         </SheetTrigger>
-        <SheetContent className="w-[400px] sm:w-[800px]">
+        <SheetContent className="w-[400px] sm:w-[800px] lg:w-[1200px]">
           <SheetHeader>
             <SheetTitle>支払先</SheetTitle>
           </SheetHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="code" className="text-right">
+            <div className="grid grid-cols-8 gap-4 items-center">
+              <Badge variant="required" className="col-span-1 w-12">必須</Badge>
+              <Label htmlFor="code" className="col-span-1 justify-center text-right text-nowrap">
                 コード
               </Label>
               <Input
@@ -173,11 +174,12 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
                 required={true}
                 defaultValue={payeeState.code}
                 onChange={handleChange}
-                className="col-span-3"
+                className="col-span-6"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
+            <div className="grid grid-cols-8 items-center gap-4">
+              <Badge variant="required" className="col-span-1 w-12">必須</Badge>
+              <Label htmlFor="name" className="col-span-1 text-right">
                 名称
               </Label>
               <Input
@@ -186,24 +188,12 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
                 required={true}
                 defaultValue={payeeState.name}
                 onChange={handleChange}
-                className="col-span-3"
+                className="col-span-6"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="invoiceNumber" className="text-right">
-                事業者登録番号
-              </Label>
-              <Input
-                id="invoiceNumber"
-                name="invoiceNumber"
-                defaultValue={payeeState.invoiceNumber}
-                onChange={handleChange}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="taxRateType" className="text-right">
-                税率区分
+              <Label htmlFor="taxRateType" className="text-right col-span-1">
+                税率
               </Label>
               <Select
                 name="taxRateType"
@@ -216,6 +206,18 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
                 </SelectTrigger>
                 <TaxTypeSelectItems/>
               </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="invoiceNumber" className="col-span-1 text-right text-nowrap">
+                事業者登録番号
+              </Label>
+              <Input
+                id="invoiceNumber"
+                name="invoiceNumber"
+                defaultValue={payeeState.invoiceNumber}
+                onChange={handleChange}
+                className="col-span-3"
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="remarks" className="text-right">
@@ -242,7 +244,7 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
             </div>
           </div>
           <SheetFooter>
-            <Button type="submit" onClick={handleSubmit}>Save changes</Button>
+            <Button type="submit" onClick={handleSubmit}>{Messages.SAVE}</Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
@@ -256,8 +258,8 @@ export const PayeeSheet = ({payeeId, children}: PayeeSheetProps) => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={handleCancelClose}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmClose}>OK</AlertDialogAction>
+              <AlertDialogCancel onClick={handleCancelClose}>キャンセル</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmClose}>閉じる</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
