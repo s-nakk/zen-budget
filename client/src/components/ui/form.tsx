@@ -5,7 +5,6 @@ import {Controller, ControllerProps, FieldPath, FieldValues, FormProvider, useFo
 
 import {cn} from "@/lib/utils/utils"
 import {Label} from "@/components/ui/label"
-import {MdError} from "react-icons/md";
 
 const Form = FormProvider
 
@@ -92,7 +91,6 @@ const FormLabel = React.forwardRef<
         htmlFor={formItemId}
         {...props}
       />
-      {error && <MdError className="ml-1 animate-pulse" color="rgb(234, 45, 72)"/>}
     </div>
   )
 })
@@ -100,22 +98,32 @@ FormLabel.displayName = "FormLabel"
 
 const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
-  React.ComponentPropsWithoutRef<typeof Slot>
+  React.ComponentPropsWithoutRef<typeof Slot> & { error?: boolean; isDirty?: boolean }
 >(({...props}, ref) => {
-  const {error, formItemId, formDescriptionId, formMessageId} = useFormField()
+  const {error, formItemId, formDescriptionId, formMessageId, isDirty} = useFormField()
+  // Slotの子コンポーネントに渡すために、errorとisDirtyをpropsに追加
+  const slotProps = {
+    ...props,
+    error,
+    isDirty,
+    // 他に必要なプロパティがあればここに追加
+  };
 
   return (
-    <Slot
-      ref={ref}
-      id={formItemId}
-      aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
-      }
-      aria-invalid={!!error}
-      {...props}
-    />
+    <div className={"relative"}>
+      <Slot
+        ref={ref}
+        id={formItemId}
+        className={error && "border-red-800 bg-red-50 text-red-800 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"}
+        aria-describedby={
+          !error
+            ? `${formDescriptionId}`
+            : `${formDescriptionId} ${formMessageId}`
+        }
+        aria-invalid={!!error}
+        {...slotProps}
+      />
+    </div>
   )
 })
 FormControl.displayName = "FormControl"

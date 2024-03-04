@@ -60,8 +60,8 @@ class UsersController < ApplicationController
     end
     if @user.update(update_user_params)
       avatar_url = if @user.avatar.attached?
-        Rails.application.routes.url_helpers.rails_blob_path(@user.avatar, only_path: true)
-      end
+                     Rails.application.routes.url_helpers.rails_blob_path(@user.avatar, only_path: true)
+                   end
       render json: { user: @user, avatar_url: avatar_url }, status: :ok
     else
       render json: @user.errors, status: :unprocessable_entity

@@ -1,11 +1,14 @@
-import {request} from "@/lib/utils/api-utils";
+import {createUrlWithQueryParams, request} from "@/lib/utils/api-utils";
 import {RequestMethods} from "@/lib/constants/enums";
 import {EntityBase} from "@/lib/types/definitions";
 
 const baseApiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const findByEmail = async (email: string) => {
-  return await request(`${baseApiUrl}/users/find_by_email`, RequestMethods.Post, {email});
+  const param = new Map<string, string>;
+  param.set('email', email);
+  const url = createUrlWithQueryParams(`${baseApiUrl}/users/find_by_email`, param);
+  return await request(url, RequestMethods.Get);
 }
 export const findById = async (id: string) => {
   const url = `${baseApiUrl}/users/find_with_avatar/${id}`

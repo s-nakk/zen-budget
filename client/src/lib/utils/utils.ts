@@ -6,6 +6,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const format = (str: string, ...args: any[]): string => {
+  for (const [i, arg] of args.entries()) {
+    const regExp = new RegExp(`\\{${i}\\}`, 'g')
+    str = str.replace(regExp, arg as string)
+  }
+  return str
+}
 export function errorMessage(error: any): Error {
   let message
   if (error instanceof Error) message = error.message

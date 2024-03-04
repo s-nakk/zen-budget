@@ -20,7 +20,7 @@ export async function authenticate(
         case 'CredentialsSignin':
           return 'メールアドレスまたはパスワードが間違っています。'
         default:
-          return 'ログインに失敗しました。'
+          return 'ユーザー情報が見つかりませんでした。'
       }
     }
     throw error;

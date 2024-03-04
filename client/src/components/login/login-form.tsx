@@ -1,5 +1,4 @@
 'use client';
-
 import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -9,10 +8,13 @@ import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
 import {ExclamationCircleIcon} from "@heroicons/react/16/solid";
 import {authenticate} from "@/lib/actions/auth-actions";
+import {format} from "@/lib/utils/utils";
+import {ValidateError} from "@/lib/constants/validate-error-messages";
 
 const FormSchema = z.object({
-  email: z.string().min(4).max(40),
-  password: z.string().min(6).max(40),
+  email: z.string().email(format(ValidateError.INCORRECT_FORMAT_1, "メールアドレス"))
+    .min(4, format(ValidateError.DIGITS_UNDER_1, 4)).max(40, format(ValidateError.DIGITS_OVER_1, 40)),
+  password: z.string().min(6, format(ValidateError.DIGITS_UNDER_ALPHANUMERIC_1, 6)).max(40, format(ValidateError.DIGITS_OVER_ALPHANUMERIC_1, 40)),
 });
 
 export default function LoginForm() {
@@ -23,10 +25,11 @@ export default function LoginForm() {
       email: "",
       password: "",
     },
+    mode: "onBlur",
   })
 
   return (
-    <Form {...form}>
+    <Form {...form} key={"login-form"}>
       <form action={dispatch}>
         <FormField
           control={form.control}
@@ -38,6 +41,7 @@ export default function LoginForm() {
                 <Input
                   type="email"
                   placeholder="example@mail.com"
+                  autoComplete={"on"}
                   required={true}
                   {...field}
                 />
@@ -53,7 +57,7 @@ export default function LoginForm() {
             <FormItem className="flex-row items-center justify-center rounded-md py-[9px] pl-10 ">
               <FormLabel>パスワード</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="英数字(6桁以上)" required={true} {...field}
+                <Input type="password" placeholder="英数字(6桁以上)" required={true} autoComplete={"on"} {...field}
                 />
               </FormControl>
               <FormMessage/>
